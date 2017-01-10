@@ -208,10 +208,10 @@
           
           $parameters = array(
               "survey" => $sSurveyId,
-              "token" => $sToken,
+              "token" => (isset($sToken)) ? sToken : null,
               "api_token" => $auth,
               "server_key" => $serverToken,
-              "additionalFields" => json_encode($additionalAnswers)
+              "additionalFields" => ($additionalFields) ? json_encode($additionalAnswers) : null
           );
           
           $hookSent = $this->httpPost($url,$parameters);
@@ -259,6 +259,15 @@
             return ($this->get('bUse','Survey',$sSurveyId)==0)||(($this->get('bUse','Survey',$sSurveyId)==2) && ($this->get('bUse',null,null,$this->settings['bUse'])==0));
           }
 
+          
+          /**
+          *   check if the hook should be sent
+          *   returns a boolean
+          */
+          private function getTokenString($sSurveyId,$response)
+          {
+            return ($this->get('bSendToken','Survey',$sSurveyId)==='1') ? $response['token'] : null;
+          }
 
           /**
           *
@@ -273,7 +282,20 @@
             }
             return null;
           }
-
+          
+          private function getAdditionalAnswers($additionalFields=null, $response)
+          {
+            if($additionalFields)
+            {
+              $additionalAnswers = array();
+              foreach($additionalFields as $field)
+              {
+                $additionalAnswers[$field] = htmlspecialchars($response[$field]);
+              }
+            return $additionalAnswers;
+            }
+          return null;
+          }
 
           private function debug($parameters, $hookSent, $time_start)
           {
@@ -289,22 +311,7 @@
               }
           }
 
-          private function getTokenString($sSurveyId,$response)
-          {
-            return ($this->get('bSendToken','Survey',$sSurveyId)==='1') ? $response['token'] : null;
-          }
+          
 
-          private function getAdditionalAnswers($additionalFields, $response)
-          {
-            if($additionalFields)
-            {
-              $additionalAnswers = array();
-              foreach($additionalFields as $field)
-              {
-                $additionalAnswers[$field] = htmlspecialchars($response[$field]);
-              }
-            return $additionalAnswers;
-            }
-          return null;
-          }
+          
 }
