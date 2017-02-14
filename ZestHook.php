@@ -184,11 +184,11 @@
         * @return array | response
         */
         public function afterSurveyComplete()
-        {   
+        {
           $time_start = microtime(true);
           $oEvent     = $this->getEvent();
           $sSurveyId = $oEvent->get('surveyId');
-          if($this->isHookEnabled($sSurveyId))
+          if($this->isHookDisabled($sSurveyId))
           {
               return;
           }
@@ -203,9 +203,9 @@
               $responseId = $oEvent->get('responseId');
               $response = $this->api->getResponse($sSurveyId, $responseId);
               $sToken = $this->getTokenString($sSurveyId,$response);
-              $additionalAnswers = $this->getAdditionalAnswers($additionalFields, $response);  
+              $additionalAnswers = $this->getAdditionalAnswers($additionalFields, $response);
           }
-          
+
           $parameters = array(
               "survey" => $sSurveyId,
               "token" => (isset($sToken)) ? $sToken : null,
@@ -213,19 +213,19 @@
               "server_key" => $serverToken,
               "additionalFields" => ($additionalFields) ? json_encode($additionalAnswers) : null
           );
-          
+
           $hookSent = $this->httpPost($url,$parameters);
-          
+
           $this->debug($parameters, $hookSent, $time_start);
-          
+
           return;
         }
 
-          
+
         /**
         *   httpPost function http://hayageek.com/php-curl-post-get/
         *   creates and executes a POST request
-        *   returns the output 
+        *   returns the output
         */
         private function httpPost($url,$params)
         {
@@ -253,13 +253,13 @@
           *   check if the hook should be sent
           *   returns a boolean
           */
-          
-          private function isHookEnabled($sSurveyId)
+
+          private function isHookDisabled($sSurveyId)
           {
             return ($this->get('bUse','Survey',$sSurveyId)==0)||(($this->get('bUse','Survey',$sSurveyId)==2) && ($this->get('bUse',null,null,$this->settings['bUse'])==0));
           }
 
-          
+
           /**
           *   check if the hook should be sent
           *   returns a boolean
@@ -282,7 +282,7 @@
             }
             return null;
           }
-          
+
           private function getAdditionalAnswers($additionalFields=null, $response)
           {
             if($additionalFields)
@@ -311,7 +311,7 @@
               }
           }
 
-          
 
-          
+
+
 }
