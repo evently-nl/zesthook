@@ -229,17 +229,12 @@
         */
         private function httpPost($url,$params)
         {
-          $postData = '';
-          //create name value pairs seperated by &
-          foreach($params as $k => $v)
-          {
-            $postData .= $k . '='.$v.'&';
-          }
-          $postData = rtrim($postData, '&');
+          $fullUrl = $url . '?api_token=' . $params['api_token'];
+          $postData = $params;
           $fp = fopen(dirname(__FILE__).'/errorlog.txt', 'w');
           $ch = curl_init();
           curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-          curl_setopt($ch,CURLOPT_URL,$url);
+          curl_setopt($ch,CURLOPT_URL,$fullUrl);
           curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
           curl_setopt($ch,CURLOPT_HEADER, false);
           curl_setopt($ch, CURLOPT_POST, count($postData));
