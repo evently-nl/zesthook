@@ -57,6 +57,16 @@
           	'label' => 'Zest server id token',
             'help'=>'To get a token logon to your account, go to your servers and copy the server id',
         	  ),
+            'bDestroyResponseOnSubmit' => array(
+                'type' => 'select',
+                'label' => 'Destroy response on submission',
+                'options'=>array(
+                  0=> 'No',
+                  1=> 'Yes'
+                ),
+                'default'=>0,
+                'help'=>'Set to Yes if you want to remove survey response from server after submission',
+            ),
             'bDebugMode' => array(
             'type' => 'select',
             'options'=>array(
@@ -217,6 +227,11 @@
           $hookSent = $this->httpPost($url,$parameters);
 
           $this->debug($parameters, $hookSent, $time_start);
+          if ($response != null && $this->get('bDestroyResponseOnSubmit',null,null,$this->settings['bDestroyResponseOnSubmit']) == 1)
+          {
+            $responseObject = $this->api->getResponse($sSurveyId, $responseId, false);
+            $responseObject->delete();
+          }
 
           return;
         }
