@@ -17,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-    class ZestHook extends \ls\pluginmanager\PluginBase {
+    class ZestHook extends PluginBase {
 
         protected $storage = 'DbStorage';
         static protected $description = 'Webhook for Limesurvey: send a curl POST after every response submission.';
@@ -31,43 +31,42 @@
 
 
 	protected $settings = array(
-            'bUse' => array(
-            'type' => 'select',
-            'options'=>array(
-            0=>'No',
-            1=>'Yes'
-            ),
-            'default'=>1,
-            'label' => 'Send a hook for every survey by default?',
-            'help'=>'Overwritable in each Survey setting',
-            ),
-            'sUrl' => array(
-            'type' => 'string',
-            'default'=>'https://zest.evently.nl/api/1/ping',
-            'label' => 'The default address to send the webhook to',
-            'help'=>'If you are using Zest, this should be https://zest.evently.nl/api/1/ping',
-            ),
-	          'sAuthToken' => array(
-          	'type' => 'string',
-          	'label' => 'Zest Platform API Token',
-            'help'=>'To get a token logon to your account and click on the Tokens tab',
-        	  ),
-            'sServerToken' => array(
-          	'type' => 'string',
-          	'label' => 'Zest server id token',
-            'help'=>'To get a token logon to your account, go to your servers and copy the server id',
-        	  ),
-            'bDebugMode' => array(
-            'type' => 'select',
-            'options'=>array(
-            0=>'No',
-            1=>'Yes'
-            ),
-            'default'=>0,
-            'label' => 'Enable Debug Mode',
-            'help'=>'Enable debugmode to see what data is transmitted',
-        	  )
-
+			'bUse' => array (
+					'type' => 'select',
+					'options' => array (
+							0 => 'No',
+							1 => 'Yes' 
+					),
+					'default' => 1,
+					'label' => 'Send a hook for every survey by default?',
+					'help' => 'Overwritable in each Survey setting' 
+			),
+			'sUrl' => array (
+					'type' => 'string',
+					'default' => 'https://zest.evently.nl/api/1/ping',
+					'label' => 'The default address to send the webhook to',
+					'help' => 'If you are using Zest, this should be https://zest.evently.nl/api/1/ping' 
+			),
+			'sAuthToken' => array (
+					'type' => 'string',
+					'label' => 'Zest Platform API Token',
+					'help' => 'To get a token logon to your account and click on the Tokens tab' 
+			),
+			'sServerToken' => array (
+					'type' => 'string',
+					'label' => 'Zest server id token',
+					'help' => 'To get a token logon to your account, go to your servers and copy the server id' 
+			),
+			'bDebugMode' => array (
+					'type' => 'select',
+					'options' => array (
+							0 => 'No',
+							1 => 'Yes' 
+					),
+					'default' => 0,
+					'label' => 'Enable Debug Mode',
+					'help' => 'Enable debugmode to see what data is transmitted' 
+			) 
 	);
 
   /**
@@ -77,91 +76,107 @@
     {
       $oEvent = $this->event;
       $oEvent->set("surveysettings.{$this->id}", array(
-        'name' => get_class($this),
-        'settings' => array(
-        'bUse' => array(
-          'type' => 'select',
-          'label' => 'Send a hook for this survey',
-          'options'=>array(
-            0=> 'No',
-            1=> 'Yes',
-            2=> 'Use site settings (default)'
-          ),
-          'default'=>2,
-          'help'=>'Leave default to use global setting',
-          'current'=> $this->get('bUse','Survey',$oEvent->get('survey')),
-        ),
-        'bUrlOverwrite' => array(
-          'type' => 'select',
-          'label' => 'Overwrite the global Hook Url',
-          'options'=>array(
-            0=> 'No',
-            1=> 'Yes'
-          ),
-          'default'=>0,
-          'help'=>'Set to Yes if you want to use a specific URL for this survey',
-          'current'=> $this->get('bUrlOverwrite','Survey',$oEvent->get('survey')),
-        ),
-        'sUrl' => array(
-        'type' => 'string',
-        'label' => 'The  address to send the hook for this survey to:',
-        'help'=>'Leave blank to use global setting',
-        'current'=> $this->get('sUrl','Survey',$oEvent->get('survey')),
-        ),
-        'bAuthTokenOverwrite' => array(
-          'type' => 'select',
-          'label' => 'Overwrite the global authorization token',
-          'options'=>array(
-            0=> 'No',
-            1=> 'Yes'
-          ),
-          'default'=>0,
-          'help'=>'Set to Yes if you want to use a specific zest API token for this survey',
-          'current'=> $this->get('bAuthTokenOverwrite','Survey',$oEvent->get('survey')),
-        ),
-        'sAuthToken' => array(
-        'type' => 'string',
-        'label' => 'Use a specific API Token for this survey (leave blank to use default)',
-        'help'=>'Leave blank to use default',
-        'current'=> $this->get('sAuthToken','Survey',$oEvent->get('survey')),
-        ),
-        'bServerTokenOverwrite' => array(
-          'type' => 'select',
-          'label' => 'Overwrite the global server token',
-          'options'=>array(
-            0=> 'No',
-            1=> 'Yes'
-          ),
-          'default'=>0,
-          'help'=>'Set to Yes if you want to use a specific Zest server-token for this survey',
-          'current'=> $this->get('bServerTokenOverwrite','Survey',$oEvent->get('survey')),
-        ),
-        'sServerToken' => array(
-          	'type' => 'string',
-          	'label' => 'Zest server-token',
-            'help'=>'To get a token, log in to your account, go to your servers and copy the server token',
-            'current'=> $this->get('sServerToken','Survey',$oEvent->get('survey')),
-
-            ),
-        'bSendToken' => array(
-          'type' => 'select',
-          'label' => 'Send the users\' token to the hook',
-          'options'=>array(
-            0=> 'No',
-            1=> 'Yes'
-          ),
-          'default'=>0,
-          'help'=>'Set to Yes if you want to pass the users token along in the request',
-          'current'=> $this->get('bSendToken','Survey',$oEvent->get('survey')),
-      ),
-          'sAnswersToSend' => array(
-          	'type' => 'string',
-          	'label' => 'Answers to send',
-            'help'=> 'Comma separated question codes of the answers you want to send along',
-        	  'current'=> $this->get('sAnswersToSend','Survey',$oEvent->get('survey')),
-            ),
-      ),
-    ));
+				'name' => get_class ( $this ),
+				'settings' => array (
+						'bUse' => array (
+								'type' => 'select',
+								'label' => 'Send a hook for this survey',
+								'options' => array (
+										0 => 'No',
+										1 => 'Yes',
+										2 => 'Use site settings (default)' 
+								),
+								'default' => 2,
+								'help' => 'Leave default to use global setting',
+								'current' => $this->get ( 'bUse', 'Survey', $oEvent->get ( 'survey' ) ) 
+						),
+						'bUrlOverwrite' => array (
+								'type' => 'select',
+								'label' => 'Overwrite the global Hook Url',
+								'options' => array (
+										0 => 'No',
+										1 => 'Yes' 
+								),
+								'default' => 0,
+								'help' => 'Set to Yes if you want to use a specific URL for this survey',
+								'current' => $this->get ( 'bUrlOverwrite', 'Survey', $oEvent->get ( 'survey' ) ) 
+						),
+						'sUrl' => array (
+								'type' => 'string',
+								'label' => 'The  address to send the hook for this survey to:',
+								'help' => 'Leave blank to use global setting',
+								'current' => $this->get ( 'sUrl', 'Survey', $oEvent->get ( 'survey' ) ) 
+						),
+						'bAuthTokenOverwrite' => array (
+								'type' => 'select',
+								'label' => 'Overwrite the global authorization token',
+								'options' => array (
+										0 => 'No',
+										1 => 'Yes' 
+								),
+								'default' => 0,
+								'help' => 'Set to Yes if you want to use a specific zest API token for this survey',
+								'current' => $this->get ( 'bAuthTokenOverwrite', 'Survey', $oEvent->get ( 'survey' ) ) 
+						),
+						'sAuthToken' => array (
+								'type' => 'string',
+								'label' => 'Use a specific API Token for this survey (leave blank to use default)',
+								'help' => 'Leave blank to use default',
+								'current' => $this->get ( 'sAuthToken', 'Survey', $oEvent->get ( 'survey' ) ) 
+						),
+						'bServerTokenOverwrite' => array (
+								'type' => 'select',
+								'label' => 'Overwrite the global server token',
+								'options' => array (
+										0 => 'No',
+										1 => 'Yes' 
+								),
+								'default' => 0,
+								'help' => 'Set to Yes if you want to use a specific Zest server-token for this survey',
+								'current' => $this->get ( 'bServerTokenOverwrite', 'Survey', $oEvent->get ( 'survey' ) ) 
+						),
+						'sServerToken' => array (
+								'type' => 'string',
+								'label' => 'Zest server-token',
+								'help' => 'To get a token, log in to your account, go to your servers and copy the server token',
+								'current' => $this->get ( 'sServerToken', 'Survey', $oEvent->get ( 'survey' ) ) 
+						),
+						'bSendToken' => array (
+								'type' => 'select',
+								'label' => 'Send the users\' token to the hook',
+								'options' => array (
+										0 => 'No',
+										1 => 'Yes' 
+								),
+								'default' => 0,
+								'help' => 'Set to Yes if you want to pass the users token along in the request',
+								'current' => $this->get ( 'bSendToken', 'Survey', $oEvent->get ( 'survey' ) ) 
+						),
+						'sAnswersToSend' => array (
+								'type' => 'string',
+								'label' => 'Answers to send',
+								'help' => 'Comma separated question codes of the answers you want to send along',
+								'current' => $this->get ( 'sAnswersToSend', 'Survey', $oEvent->get ( 'survey' ) ) 
+						),
+						'bRequestType' => array (
+								'type' => 'select',
+								'label' => 'Request Type',
+								'default' => 0,
+								'options' => array (
+										0 => 'POST',
+										1 => 'GET' 
+								),
+								'current' => $this->get ( 'bRequestType', 'Survey', $oEvent->get ( 'survey' ) ) 
+						),
+						'sPostSignature' => array (
+								'type' => 'string',
+								'default' => '{"survey":"{surveyId}","token":"{token}","api_token":"{apiToken}","server_key":"{serverKey}","additionalFields":"{additionalFields}"}',
+								'label' => 'JSON Signature',
+								'help' => 'JSON signature with placeholders {surveyId},{token},{apiToken},{surverKey} and {additionalFields}, use {{fieldcode}} for additional specific fields values',
+								'current' => $this->get ( 'sPostSignature', 'Survey', $oEvent->get ( 'survey' ) ) 
+						) 
+				) 
+		));
   }
 
     /**
@@ -196,6 +211,8 @@
           $url = ($this->get('bUrlOverwrite','Survey',$sSurveyId)==='1') ? $this->get('sUrl','Survey',$sSurveyId) : $this->get('sUrl',null,null,$this->settings['sUrl']);
           $auth = ($this->get('bAuthTokenOverwrite','Survey',$sSurveyId)==='1') ? $this->get('sAuthToken','Survey',$sSurveyId) : $this->get('sAuthToken',null,null,$this->settings['sAuthToken']);
           $serverToken = ($this->get('bServerTokenOverwrite','Survey',$sSurveyId)==='1') ? $this->get('sServerToken','Survey',$sSurveyId) : $this->get('sServerToken',null,null,$this->settings['sServerToken']);
+          $postSignature = $this->get('sPostSignature','Survey',$sSurveyId);
+          $requestType = $this->get('bRequestType','Survey',$sSurveyId);
           $additionalFields = $this->getAdditionalFields($sSurveyId);
 
           if(($this->get('bSendToken','Survey',$sSurveyId)==='1')||(count($additionalFields) > 0))
@@ -205,16 +222,30 @@
               $sToken = $this->getTokenString($sSurveyId,$response);
               $additionalAnswers = $this->getAdditionalAnswers($additionalFields, $response);
           }
+          if($postSignature){
+	          $mainFields= array("/{surveyId}/","/{token}/","/{apiToken}/","/{serverKey}/","/{additionalFields}/");
+	          $mainValues = array($sSurveyId,(isset($sToken)) ? $sToken : null,$auth,$serverToken,($additionalFields) ? json_encode($additionalAnswers) : null);
+	          $parameters = preg_replace($mainFields, $mainValues, $postSignature);
+	          if($additionalFields){
+	          	foreach ($additionalAnswers as $key => $val)
+	          		$parameters = preg_replace("/{{".$key."}}/", $val, $parameters);
+	          }
+	          
+	          $parameters = json_decode($parameters,true);
+          }else{
+	          $parameters = array(
+	              "survey" => $sSurveyId,
+	              "token" => (isset($sToken)) ? $sToken : null,
+	              "api_token" => $auth,
+	              "server_key" => $serverToken,
+	              "additionalFields" => ($additionalFields) ? json_encode($additionalAnswers) : null
+	          );
+          }
 
-          $parameters = array(
-              "survey" => $sSurveyId,
-              "token" => (isset($sToken)) ? $sToken : null,
-              "api_token" => $auth,
-              "server_key" => $serverToken,
-              "additionalFields" => ($additionalFields) ? json_encode($additionalAnswers) : null
-          );
-
-          $hookSent = $this->httpPost($url,$parameters);
+          if($requestType==1)
+          	$hookSent = $this->httpGet($url,$parameters);
+          else
+          	$hookSent = $this->httpPost($url,$parameters);
 
           $this->debug($parameters, $hookSent, $time_start);
 
@@ -243,7 +274,27 @@
           curl_close($ch);
           return $output;
           }
-
+          
+          
+        /**
+        *   httpGet
+        *   creates and executes a GET request
+        *   returns the output
+        */
+        private function httpGet($url,$params)
+        {
+          $postData = http_build_query($params, '', '&');
+          $fullUrl = $url.'?'.$postData;
+          $fp = fopen(dirname(__FILE__).'/errorlog.txt', 'w');
+          $ch = curl_init();
+          curl_setopt($ch,CURLOPT_URL,$fullUrl);
+          curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+          $output=curl_exec($ch);
+          curl_close($ch);
+          return $output;
+          }
+          
+          
           /**
           *   check if the hook should be sent
           *   returns a boolean
