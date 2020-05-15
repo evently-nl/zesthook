@@ -249,7 +249,7 @@ class ZestHook extends PluginBase
     else
       $hookSent = $this->httpPost($url, $parameters);
 
-    $this->debug($parameters, $hookSent, $time_start);
+    $this->debug($parameters, $hookSent, $time_start,$response);
 
     return;
   }
@@ -271,6 +271,7 @@ class ZestHook extends PluginBase
     curl_setopt($ch, CURLOPT_HEADER, false);
     curl_setopt($ch, CURLOPT_POST, count($postData));
     curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+    
     $output = curl_exec($ch);
     curl_close($ch);
     return $output;
@@ -341,13 +342,15 @@ class ZestHook extends PluginBase
     return null;
   }
 
-  private function debug($parameters, $hookSent, $time_start)
+  private function debug($parameters, $hookSent, $time_start, $response)
   {
     if ($this->get('bDebugMode', 'Survey', $this->surveyId) == 1) {
       $html =  '<pre>';
       $html .= print_r($parameters, true);
       $html .=  "<br><br> ----------------------------- <br><br>";
       $html .= print_r($hookSent, true);
+      $html .=  "<br><br> ----------------------------- <br><br>";
+      $html .= print_r($response, true);
       $html .=  "<br><br> ----------------------------- <br><br>";
       $html .=  'Total execution time in seconds: ' . (microtime(true) - $time_start);
       $html .=  '</pre>';

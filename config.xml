@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <metadata>
+        <name>ZestHook</name>
+        <type>plugin</type>
+        <creationDate>2019-12-13</creationDate>
+        <lastUpdate>2020-05-15</lastUpdate>
+        <author>Stefan Verweij | Evently</author>
+        <authorUrl>https://www.evently.nl</authorUrl>
+        <supportUrl>https://www.evently.nl</supportUrl>
+        <version>1.1.0</version>
+        <lastSecurityUpdate>1.1.0</lastSecurityUpdate>
+        <license>-</license>
+        <description><![CDATA[Use ZestHook to send Post or Get requests on survey submission]]></description>
+    </metadata>
+    <compatibility>
+        <version>3.0</version>
+        <version>4.0</version>
+    </compatibility>
+    <updaters>
+    <updater>
+        <stable>1</stable>
+        <type>rest</type>
+        <source>https://comfortupdate.limesurvey.org/index.php?r=limestorerest</source>
+        <manualUpdateUrl>https://www.evently.nl/limesurvey</manualUpdateUrl>
+    </updater>
+</updaters>
+</config>
