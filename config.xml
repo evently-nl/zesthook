@@ -8,8 +8,8 @@
         <author>Stefan Verweij | Evently</author>
         <authorUrl>https://www.evently.nl</authorUrl>
         <supportUrl>https://www.evently.nl</supportUrl>
-        <version>2.0.0</version>
-        <lastSecurityUpdate>2.0.0</lastSecurityUpdate>
+        <version>2.1.0</version>
+        <lastSecurityUpdate>2.1.0</lastSecurityUpdate>
         <license>GPL v3</license>
         <description><![CDATA[Use ZestHook to send POST or GET webhook requests on survey submission]]></description>
     </metadata>
